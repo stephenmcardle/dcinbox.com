@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+{{>head}}
+
+<body>
+	{{>header}}
+	<div class="container">
+	<div class="row">
+
+    <div class="text-center">
+      <h1>Login</h1>
+      <form id="login-form" class="col-md-8 col-md-offset-2"action="/auth/login" method="post">
+        <input id="email" name="email" class="form-control" type="text" placeholder="Email Address" /><br />
+        <input id="password" name="password" class="form-control" type="password" placeholder="Password" /><br />
+        <input id="form-submit" type="submit" class="btn btn-info" />
+      </form>
+    </div>
+		
+
+	</div>
+	</div>
+
+
+  {{>imports}}
+
+
+</body>
+</html>

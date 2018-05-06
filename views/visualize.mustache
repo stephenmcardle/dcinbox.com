@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+{{>head}}
+
+<body>
+	{{>header}}
+	<div class="container">
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3" style="text-align:center;">
+	      <h1>Visualize</h1>
+	      <hr />
+	    </div>
+
+		<form id="vis-form">
+			<div class="form-group col-md-6">
+				<label for="vis-type">Chart Type</label>
+				<select id="vis-type" name="vis-type" class="form-control" required>
+					<option value="pie">Pie Chart</option>
+					<option value="column">Column Chart</option>
+					<option value="stacked-bar">Stacked Bar</option>
+				</select>
+			</div>
+
+			<div class="form-group col-md-6 pie">
+				<label for="vis-field">Field of Interest</label>
+				<select id="vis-field" name="vis-field" class="form-control">
+					<option value="party">Party</option>
+					<option value="state">State</option>
+					<option value="gender">Gender</option>
+					<option value="timestamp">Date</option>
+				</select>
+			</div>
+
+			<div class="form-group col-md-3 column hidden">
+				<label for="x-axis">X Axis</label>
+				<select id="x-axis" name="x-axis" class="form-control">
+					<option value="timestamp">Date</option>
+					<option value="state">State</option>
+				</select>
+			</div>
+
+			<div class="form-group col-md-3 column hidden">
+				<label for="y-axis">Y Axis</label>
+				<select id="y-axis" name="y-axis" class="form-control">
+					<option value="party">Party</option>
+					<option value="gender">Gender</option>
+				</select>
+			</div>
+
+			<div class="form-group col-md-12">
+				<label for="vis-query">Search Term</label>
+				<input id="vis-query" type="text" name="vis-query" class="form-control" placeholder="e.g. Healthcare" />
+			</div>
+
+			<div class="col-md-8 col-md-offset-2">
+				<input type="submit" class="form-control btn btn-primary" value="Create Visualization" />
+			</div>
+		</form>
+		<div class="col-xs-12">
+			<br />
+			<div id="chart-div"></div>
+			<div style="margin:500px"></div>
+		</div>
+
+		
+
+	</div>
+	</div>
+
+  	{{>imports}}
+
+  	<!-- canvasjs CDN import -->
+	<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+  	<!-- App-specific code -->
+  	<script type="text/javascript">
+  		(function () {
+  			$('#nav-visualize').addClass('active') // highlight correct nav link
+
+  			$('#vis-type').change(function () {
+  				if ($('#vis-type').val() === 'pie') {
+  					$('.pie').removeClass('hidden')
+  					$('.column').addClass('hidden')
+  				}
+  				if ($('#vis-type').val() === 'column') {
+  					$('.column').removeClass('hidden')
+  					$('.pie').addClass('hidden')
+  				}
+  			})
+
+  			function pieChart(chartData) {
+  				var query = `${$('#vis-query').val()} Mentions`
+  				var field = $('#vis-field').val()
+  				if (query === ' Mentions') {
+  					query = 'Emails'
+  				}
+  				if (field === 'timestamp') {
+  					field = 'date'
+  				}
+  				var chart = new CanvasJS.Chart("chart-div", {
+					theme: "light1",
+					exportEnabled: true,
+					animationEnabled: true,
+					title: {
+						text: `${query.charAt(0).toUpperCase() + query.slice(1)} by ${field.charAt(0).toUpperCase() + field.slice(1)}`
+					},
+					data: chartData
+				});
+				chart.render();
+  			}
+
+  			function columnChart(chartData) {
+  				var xAxis = $('#x-axis').val()
+  				var yAxis = $('#y-axis').val()
+  				var query = $('#vis-query').val()
+  				if (xAxis === 'timestamp') {
+  					xAxis = 'Date'
+  				} else if (xAxis === 'state') {
+  					xAxis = 'State'
+  				}
+  				if (yAxis === 'party') {
+  					yAxis = 'Party'
+  					var y1Title = 'Democrat'
+  					var y2Title = 'Republican'
+  				} else if (yAxis === 'gender') {
+  					yAxis = 'Gender'
+  					var y1Title = 'Male'
+  					var y2Title = 'Female'
+  				}
+  				var title = ''
+  				if (query !== '') {
+  					title = `${query.charAt(0).toUpperCase() + query.slice(1)} Mentions`
+  				} else {
+  					title = 'Emails'
+  				}
+  				var chart = new CanvasJS.Chart("chart-div", {
+					exportEnabled: true,
+					animationEnabled: true,
+					zoomEnabled: true,
+					title:{
+						text: `${title} by ${yAxis} and ${xAxis}`
+					},
+					subtitles: [{
+						text: "Click Legend to Hide or Unhide Data Series"
+					}], 
+					axisX: {
+						title: xAxis
+					},
+					axisY: {
+						title: y1Title,
+						titleFontColor: "#4F81BC",
+						lineColor: "#4F81BC",
+						labelFontColor: "#4F81BC",
+						tickColor: "#4F81BC"
+					},
+					axisY2: {
+						title: y2Title,
+						titleFontColor: "#C0504E",
+						lineColor: "#C0504E",
+						labelFontColor: "#C0504E",
+						tickColor: "#C0504E"
+					},
+					toolTip: {
+						shared: true
+					},
+					legend: {
+						cursor: "pointer",
+						itemclick: toggleDataSeries
+					},
+					data: [{
+						type: "column",
+						name: y1Title,
+						showInLegend: true,      
+						yValueFormatString: "#,##0.#",
+						dataPoints: chartData[0].reverse()
+					},
+					{
+						type: "column",
+						name: y2Title,
+						axisYType: "secondary",
+						showInLegend: true,
+						yValueFormatString: "#,##0.#",
+						dataPoints: chartData[1].reverse()
+					}]
+				});
+				chart.render();
+  			}
+
+  			function toggleDataSeries(e) {
+				if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+					e.dataSeries.visible = false;
+				} else {
+					e.dataSeries.visible = true;
+				}
+				e.chart.render();
+			}
+
+  			// Handle form submission
+			$('#vis-form').submit(function (event) {
+				event.preventDefault();
+				var type = $('#vis-type').val()
+				var field = $('#vis-field').val()
+				var query = $('#vis-query').val()
+				var xAxis = $('#x-axis').val()
+				var yAxis = $('#y-axis').val()
+				$.ajax({
+					url: '/api/visualize/',
+					type: 'POST',
+					data: {
+						type: type,
+						field: field,
+						query: query,
+						xAxis: xAxis,
+						yAxis: yAxis
+					},
+					success: function(response) {
+						if (response.confirmation !== 'success') {
+							alert(`Error: ${response.message}`)
+							return
+						}
+						if (type === 'pie') {
+							pieChart(response.data)
+						} else if (type === 'column') {
+							columnChart(response.data)
+						}
+					},
+					error: function(jqXHR, textStatus, err) {
+						alert(`Error: ${err.message}`)
+					}
+				});
+			})
+		})()
+  	</script>
+
+  	
+
+</body>
+</html>

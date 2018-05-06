@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+{{>head}}
+
+<body>
+	{{>header}}
+	<div class="container">
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3" style="text-align:center;">
+	      <h1>Search</h1>
+	      <hr />
+	    </div>
+
+		<form id="search-form">
+			<div class="form-group col-md-4">
+				<label for="search-party">Party</label>
+				<select id="search-party" class="form-control" name="search-party">
+					<option value="" selected>All</option>
+					<option value="Republican">Republican</option>
+					<option value="Democrat">Democrat</option>
+					<option value="I">Independent</option>
+				</select>
+			</div>
+			<div class="form-group col-md-4">
+				<label for="search-chamber">Chamber</label>
+				<select id="search-chamber" class="form-control" name="search-chamber">
+					<option value="" selected>All</option>
+					<option value="Senate">Senate</option>
+					<option value="House">House</option>
+				</select>
+			</div>
+			<div class="form-group col-md-4">
+				<label for="search-gender">Gender</label>
+				<select id="search-gender" class="form-control" name="search-gender">
+					<option value="" selected>All</option>
+					<option value="M">Male</option>
+					<option value="F">Female</option>
+				</select>
+			</div>
+			<div class="form-group col-md-6">
+				<label for="search-state">State</label>
+				<select id="search-state" class="form-control" name="search-state">
+					<option value="" selected>All</option>
+					<option value="AL">Alabama</option>
+					<option value="AK">Alaska</option>
+					<option value="AS">American Samoa</option>
+					<option value="AZ">Arizona</option>
+					<option value="AR">Arkansas</option>
+					<option value="CA">California</option>
+					<option value="CO">Colorado</option>
+					<option value="CT">Connecticut</option>
+					<option value="DE">Delaware</option>
+					<option value="DC">District Of Columbia</option>
+					<option value="FL">Florida</option>
+					<option value="GA">Georgia</option>
+					<option value="HI">Hawaii</option>
+					<option value="ID">Idaho</option>
+					<option value="IL">Illinois</option>
+					<option value="IN">Indiana</option>
+					<option value="IA">Iowa</option>
+					<option value="KS">Kansas</option>
+					<option value="KY">Kentucky</option>
+					<option value="LA">Louisiana</option>
+					<option value="ME">Maine</option>
+					<option value="MD">Maryland</option>
+					<option value="MA">Massachusetts</option>
+					<option value="MI">Michigan</option>
+					<option value="MN">Minnesota</option>
+					<option value="MS">Mississippi</option>
+					<option value="MO">Missouri</option>
+					<option value="MT">Montana</option>
+					<option value="NE">Nebraska</option>
+					<option value="NV">Nevada</option>
+					<option value="NH">New Hampshire</option>
+					<option value="NJ">New Jersey</option>
+					<option value="NM">New Mexico</option>
+					<option value="NY">New York</option>
+					<option value="NC">North Carolina</option>
+					<option value="ND">North Dakota</option>
+					<option value="MP">Northern Mariana Islands</option>
+					<option value="OH">Ohio</option>
+					<option value="OK">Oklahoma</option>
+					<option value="OR">Oregon</option>
+					<option value="PA">Pennsylvania</option>
+					<option value="PR">Puerto Rico</option>
+					<option value="RI">Rhode Island</option>
+					<option value="SC">South Carolina</option>
+					<option value="SD">South Dakota</option>
+					<option value="TN">Tennessee</option>
+					<option value="TX">Texas</option>
+					<option value="VI">US Virgin Islands</option>
+					<option value="UT">Utah</option>
+					<option value="VT">Vermont</option>
+					<option value="VA">Virginia</option>
+					<option value="WA">Washington</option>
+					<option value="WV">West Virginia</option>
+					<option value="WI">Wisconsin</option>
+					<option value="WY">Wyoming</option>
+				</select>
+			</div>
+			<div class="form-group col-md-6">
+				<label for="search-district">District</label>
+				<input id="search-district" type="number" name="search-district" class="form-control" min="1" max="55" placeholder="District" />
+			</div>
+			<div class="form-group col-md-6">
+				<label for="search-start-date">Start Date</label>
+				<input id="search-start-date" type="date" name="search-start-date" class="form-control" />
+			</div>
+			<div class="form-group col-md-6">
+				<label for="search-end-date">End Date</label>
+				<input id="search-end-date" type="date" name="search-end-date" class="form-control" />
+			</div>
+			<div class="form-group col-md-12">
+				<label for="search-query">Search Term</label>
+				<input id="search-query" type="text" name="search-query" class="form-control" placeholder="e.g. Healthcare" />
+			</div>
+			<div class="col-md-8 col-md-offset-2">
+				<input type="submit" class="form-control btn btn-primary" value="Search" />
+			</div>
+		</form>
+		<div class="col-xs-12">
+			<br />
+			<div id="no-results" class="text-center hidden">
+				<h1>No Results</h1>
+			</div>
+			
+			<!-- div for adding Canvas.js chart -->
+			<div id="chart-div" style="height: 370px; width: 100%;"></div>
+			<br />
+
+			<div id="note-and-download-div" class="text-center hidden">
+				<p>This data represents the most recent results matching your query.</p>
+				<button id="download-csv-button" class="btn btn-primary">Download CSV</button>
+				<button id="download-json-button" class="btn btn-primary">Download JSON</button>
+			</div>
+
+			<!-- div for displaying search results -->
+			<div id="results"></div>
+		</div>
+	
+	</div>
+	</div>
+
+	<script id="search-result-template" type="text/template">
+		<br />
+		<div>
+			<h1><% name %></h1>
+			<h2><% subject %></h2>
+			<p><strong>Party</strong>: <% party %></p>
+			<p><strong>Title</strong>: <% title%></p>
+			<p><strong>Gender</strong>: <% gender %></p>
+			<p><strong>State</strong>: <% state %></p>
+			<p><strong>District</strong>: <% district %></p>
+			<p><strong>Date</strong>: <% timestamp %></p>
+			<p><strong>Relevance</strong>: <% score %></p>
+			<p><% body %></p>
+		</div>
+
+	</script>
+
+  	{{>imports}}
+
+  	<!-- Mustache CDN import -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+
+	<!-- canvasjs CDN import -->
+	<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+  	<!-- App-specific code -->
+  	<script type="text/javascript">
+  		(function () {
+  			let downloadData = {}
+  			$('#nav-home').addClass('active') // highlight correct nav link
+
+			Mustache.tags = ["<%", "%>"] // change delimiter to avoid conflicting server
+			const resultTemplate = $('#search-result-template').html()
+
+			function makeChart(chartData, query) {
+				// Create dates for Canvas chart
+				for (var i = 0; i < chartData.length; i++) {
+					for (var j = 0; j < chartData[i].dataPoints.length; j++) {
+						var curr = chartData[i].dataPoints[j].x
+						chartData[i].dataPoints[j].x = new Date(curr[0], curr[1] - 1, curr[2])
+  					}
+				}
+				// Create Canvas Chart
+				var chart = new CanvasJS.Chart("chart-div", {
+					exportEnabled: true,
+					animationEnabled: true,
+					zoomEnabled: true,
+					title:{
+						text: `${query.charAt(0).toUpperCase() + query.slice(1)} Timeline`
+					},
+					axisX: {
+						valueFormatString: "MMM DD, YY"
+					},
+					axisY: {
+						title: "Number of Mentions",
+						includeZero: true
+					},
+					legend:{
+						cursor: "pointer",
+						fontSize: 16,
+						itemclick: toggleDataSeries
+					},
+					toolTip:{
+						shared: true
+					},
+					data: chartData
+				});
+				chart.render();
+
+				function toggleDataSeries(e){
+					if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+						e.dataSeries.visible = false;
+					}
+					else{
+						e.dataSeries.visible = true;
+					}
+					chart.render();
+				}
+				chart.render()
+			}
+			
+			$('#search-form').submit(function (e) {
+				e.preventDefault();
+				let query = $('#search-query').val()
+				let gender = $('#search-gender').val()
+				let party = $('#search-party').val()
+				let chamber = $('#search-chamber').val()
+				let state = $('#search-state').val()
+				let district = $('#search-district').val()
+				let startDate = $('#search-start-date').val()
+				let endDate = $('#search-end-date').val()
+				$.ajax({
+					url: '/api/search/',
+					type: 'POST',
+					data: {
+						query: query,
+						gender: gender,
+						party: party,
+						chamber: chamber,
+						state: state,
+						district: district,
+						startDate: startDate,
+						endDate: endDate
+					},
+					success: function(response) {
+						if (response.confirmation !== 'success') {
+							alert(`Error: ${response.message}`)
+							return
+						}
+						const results = response.data[0]
+						if (results.length === 0) {
+							$('#no-results').removeClass('hidden')
+							$('#note-and-download-div').addClass('hidden')
+							$('#chart-div').addClass('hidden')
+							$('#results').addClass('hidden')
+						} else {
+							downloadData = results
+							$('#no-results').addClass('hidden')
+							$('#note-and-download-div').removeClass('hidden')
+							$('#chart-div').removeClass('hidden')
+							$('#results').removeClass('hidden')
+							const chartData = response.data[1]
+							makeChart(chartData, query)
+							$('#note-and-download-div').removeClass('hidden')
+							let rows = ''
+							results.forEach(result => {
+								rows += Mustache.render(resultTemplate, result)
+							})
+							$('#results').html(rows)
+						}
+					},
+					error: function(jqXHR, textStatus, err) {
+						alert(`Error: ${err.message}`)
+					}
+				});
+			})
+			$('#download-csv-button').click(function(e) {
+				e.preventDefault()
+				// Initialize rows array with headings row
+				var rows = [["name","address","timestamp","subject","district","title","gender","state","party","score","body"]]
+				// Iterate over each result in download data
+				downloadData.forEach(item => {
+					// Create an array with the value for each piece of data
+					// If undefined, add the empty string instead
+					var row = [JSON.stringify(item.name) || '', JSON.stringify(item.address) || '', JSON.stringify(item.timestamp) || '', JSON.stringify(item.subject) || '', JSON.stringify(item.district) || '', JSON.stringify(item.title) || '', JSON.stringify(item.gender) || '', JSON.stringify(item.state) || '', JSON.stringify(item.party) || '', JSON.stringify(item.score) || '', JSON.stringify(item.body) || '']
+					// Push the new row into the nested rows array
+					rows.push(row)
+				})
+				// Build CSV string
+				var csvString = ''
+				rows.forEach(row => {
+					row.forEach(item => {
+						// Remove commas from individual fields
+						var str = item.replace(/,/g, '')
+						// Add a comma at the end of each field
+						csvString += str + ','
+					})
+					// Add a new line character at the end of each line
+					csvString += '\n'
+				})
+				// Create a new HTML a element
+				var a = document.createElement('a')
+				// Create download data string
+				var dataString = "data:text/csv;charset=utf-8," + encodeURIComponent(csvString);
+				// Set a's href equal to the dataString
+				a.setAttribute('href', dataString)
+				// Set the filename to 'results.json'
+				a.setAttribute('download', 'results.csv')
+				// Keep the element hidden
+				a.style.display = "none"
+				// Add the element to the HTML document
+				document.body.appendChild(a);
+				// Click the element to initiate download
+				a.click()
+				// Remove the element from the HTML documents
+				document.body.removeChild(a);
+			})
+			$('#download-json-button').click(function(e) {
+				e.preventDefault()
+				// Create a new HTML a element
+				var a = document.createElement('a')
+				// Create download data string
+				var dataString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(downloadData));
+				// Set a's href equal to the dataString
+				a.setAttribute('href', dataString)
+				// Set the filename to 'results.json'
+				a.setAttribute('download', 'results.json')
+				// Keep the element hidden
+				a.style.display = "none"
+				// Add the element to the HTML document
+				document.body.appendChild(a);
+				// Click the element to initiate download
+				a.click()
+				// Remove the element from the HTML documents
+				document.body.removeChild(a);
+			})
+		})()
+  	</script>
+
+  	<!-- Start of StatCounter Code -->
+	<script type="text/javascript">
+		var sc_project=11698969; 
+		var sc_invisible=0;
+		var sc_security="c17cdb38";
+	</script>
+
+	<script type="text/javascript"
+	src="http://www.statcounter.com/counter/counter.js"></script>
+	<noscript>
+		<div class="statcounter">
+			<a title="friendster counter" href="http://www.statcounter.com/friendster/" target="_blank">
+				<img class="statcounter" src="http://c.statcounter.com/11698969/0/c17cdb38/0/" alt="friendster counter" >
+			</a>
+		</div>
+	</noscript>
+	<!-- End of StatCounter Code -->
+
+</body>
+</html>
